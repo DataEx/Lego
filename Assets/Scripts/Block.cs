@@ -36,8 +36,7 @@ public class Block : MonoBehaviour
         Transform stubParent = transform;
         Stub stubPrefab = FindObjectOfType<PrefabSpawner>().StubPrefab;
         Bounds stubBounds = stubPrefab.GetComponent<Renderer>().bounds;
-        if (mpb == null)
-        {
+                if(mpb == null) {
             mpb = new MaterialPropertyBlock();
         }
 
