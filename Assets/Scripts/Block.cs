@@ -12,12 +12,18 @@ public class Block : MonoBehaviour
 
     private void OnValidate()
     {
+        blockSpecification.OnValidate();
+        if(Application.isPlaying) { return; }
         EditorApplication.delayCall += () =>
         {
             if (this == null) { return; }
-            blockSpecification.OnValidate();
             CreateBlockFromSpecification();
         };
+    }
+
+    private void Start()
+    {
+        CreateBlockFromSpecification();
     }
 
 
@@ -30,14 +36,14 @@ public class Block : MonoBehaviour
         Transform stubParent = transform;
         Stub stubPrefab = FindObjectOfType<PrefabSpawner>().StubPrefab;
         Bounds stubBounds = stubPrefab.GetComponent<Renderer>().bounds;
+        if (mpb == null)
+        {
+            mpb = new MaterialPropertyBlock();
+        }
 
         for (int i = stubParent.childCount - 1; i >= 0; i--)
         {
             DestroyImmediate(stubParent.GetChild(i).gameObject);
-        }
-
-        if(mpb == null) {
-            mpb = new MaterialPropertyBlock();
         }
 
         for (int i = 0; i < blockSpecification.length; i++)
@@ -51,7 +57,6 @@ public class Block : MonoBehaviour
                 stub.SetMaterialBlock(mpb);
             }
         }
-
         mpb.SetColor("_BaseColor", blockSpecification.color);
     }
 
