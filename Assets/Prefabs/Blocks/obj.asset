@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: obj
   m_EditorClassIdentifier: 
   displayName: New Block
-  width: 1
+  width: 42
   length: 1
   color: {r: 0, g: 0, b: 0, a: 1}
