@@ -151,6 +151,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockSpecs: {fileID: 0}
+  onCreateNewBlock:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1846395655}
+        m_MethodName: ResetFields
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &281782299
 Transform:
   m_ObjectHideFlags: 0
@@ -841,6 +855,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d194197403ba4e141aa1396a42efd159, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blockCreator: {fileID: 281782298}
   inputFieldPrefab: {fileID: 5715925531257080021, guid: eb188100f9f11a44ea861114606c2cb8,
     type: 3}
   colorFieldPrefab: {fileID: 3335483006064344794, guid: f6c7485d914f9b849a1093e7aee1c6ae,

@@ -7,6 +7,9 @@ using System;
 public class BlockSpecsMenuCreator : MonoBehaviour
 {
     [SerializeField]
+    private BlockCreator blockCreator;
+
+    [SerializeField]
     private TextUI inputFieldPrefab = default;
 
     [SerializeField]
@@ -48,6 +51,27 @@ public class BlockSpecsMenuCreator : MonoBehaviour
         }
         BlockSettingsUI ui = Instantiate(menuCreatorDictionary[type]);
         ui.transform.SetParent(transform);
-        ui.SetParameterName(fieldInfo.Name);
+        ui.SetFieldInfo(fieldInfo);
+        ui.SetDefaultValue(fieldInfo.GetValue(blockCreator.BlockSpecs));
+        ui.AddOnSettingValueChangedListener(OnFieldChange);
+    }
+
+    public void OnFieldChange(BlockSettingsUI ui, object value, FieldInfo field)
+    {
+        var blockSpecs = blockCreator.BlockSpecs;
+        if(blockSpecs == null) { return; }
+
+        var convertedValue = Convert.ChangeType(value, field.FieldType);
+        field.SetValue(blockSpecs, convertedValue);
+        blockSpecs.OnValidate();
+        ui.SetValue(field.GetValue(blockSpecs));
+    }
+
+    public void ResetFields() {
+        BlockSpecs specs = blockCreator.BlockSpecs;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            transform.GetChild(i).GetComponent<BlockSettingsUI>().ResetToDefault();
+        }
     }
 }

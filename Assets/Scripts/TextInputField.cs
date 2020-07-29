@@ -1,25 +1,28 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class TextInputField : BlockSettingsUIInputField<string>
+public class TextInputField : BlockSettingsUIInputField
 {
+    public override Type InputType => typeof(string);
+
     private InputField inputField;
-
-    public override void AddOnFieldChangeHandler(UnityAction<string> action)
-    {
-        inputField.onEndEdit.AddListener(action);
-    }
-
-    public override void SetField(string value)
-    {
-        inputField.text = value;
-    }
 
     private void Awake()
     {
         inputField = GetComponent<InputField>();
+        inputField.onEndEdit.AddListener(OnEditEnd);
+    }
+
+    public override void SetValue(object value)
+    {
+        inputField.text = value.ToString();
+    }
+
+    private void OnEditEnd(string s) {
+        OnFieldChangedCallback(s);
     }
 }

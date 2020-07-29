@@ -1,25 +1,36 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BlockCreator : MonoBehaviour
 {
     [SerializeField]
     private BlockSpecs blockSpecs;
-    private BlockSpecs currentBlockSpecs;
+    public BlockSpecs BlockSpecs { get; private set; }
 
+    [Space(15)]
+    [SerializeField]
+    private UnityEvent onCreateNewBlock;
+
+    private void Awake()
+    {
+        CreateNewBlock();
+    }
 
     public void CreateNewBlock() {
         UnsubscribeBlockSpecs();
         blockSpecs = ScriptableObject.CreateInstance<BlockSpecs>();
-        currentBlockSpecs = blockSpecs;
+        BlockSpecs = blockSpecs;
         SubscribeBlockSpecs();
-        currentBlockSpecs.OnValidate();
+        BlockSpecs.OnValidate();
+        onCreateNewBlock.Invoke();
     }
 
     public void SaveBlock()
     {
-        UnityEditor.AssetDatabase.CreateAsset(currentBlockSpecs, $"Assets/Prefabs/Blocks/{blockSpecs.displayName}.asset");
+        UnityEditor.AssetDatabase.CreateAsset(BlockSpecs, $"Assets/Prefabs/Blocks/{blockSpecs.displayName}.asset");
         UnityEditor.AssetDatabase.SaveAssets();
         UnityEditor.AssetDatabase.Refresh();
     }
@@ -35,45 +46,44 @@ public class BlockCreator : MonoBehaviour
         }
 
         // TODO allow user to rotate the block
-
         // TODO Maybe don't let them touch the file directly but create menu options that can be modified and then saved to file?
     }
 
     private void OnSpecsUpdate() {
         // TODO: Create block
-        print("make me a block with " + currentBlockSpecs.length);
+        print("make me a block with " + BlockSpecs.length);
     }
 
     private void CheckForSpecsFileChange()
     {
-        if (currentBlockSpecs != blockSpecs)
+        if (BlockSpecs != blockSpecs)
         {
             UnsubscribeBlockSpecs();
-            currentBlockSpecs = blockSpecs;
+            BlockSpecs = blockSpecs;
             SubscribeBlockSpecs();
         }
     }
 
     private void UnsubscribeBlockSpecs()
     {
-        if (currentBlockSpecs != null)
+        if (BlockSpecs != null)
         {
-            currentBlockSpecs.OnSpecsUpdate -= OnSpecsUpdate;
+            BlockSpecs.OnSpecsUpdate -= OnSpecsUpdate;
         }
     }
 
     private void SubscribeBlockSpecs()
     {
-        if (currentBlockSpecs != null)
+        if (BlockSpecs != null)
         {
-            currentBlockSpecs.OnSpecsUpdate += OnSpecsUpdate;
+            BlockSpecs.OnSpecsUpdate += OnSpecsUpdate;
         }
     }
 
     private void OnDestroy()
     {
-        if (currentBlockSpecs != null) {
-            currentBlockSpecs.OnSpecsUpdate -= OnSpecsUpdate;
+        if (BlockSpecs != null) {
+            BlockSpecs.OnSpecsUpdate -= OnSpecsUpdate;
         }
     }
 }
