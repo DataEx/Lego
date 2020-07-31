@@ -11,7 +11,7 @@ public class NubCollider : MonoBehaviour, IMouseInteractible
         renderer = GetComponent<Renderer>();
     }
 
-    public void OnMouseClick(){ print("click"); }
+    public void OnMouseClick() { print("click"); }
 
     public void OnMouseEnter()
     {

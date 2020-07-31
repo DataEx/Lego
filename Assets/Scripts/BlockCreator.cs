@@ -10,9 +10,12 @@ public class BlockCreator : MonoBehaviour
     private BlockSpecs blockSpecs;
     public BlockSpecs BlockSpecs { get; private set; }
 
+    [SerializeField]
+    Blockk displayBlock = default;
+
     [Space(15)]
     [SerializeField]
-    private UnityEvent onCreateNewBlock;
+    private UnityEvent onCreateNewBlock = default;
 
     private void Awake()
     {
@@ -23,6 +26,7 @@ public class BlockCreator : MonoBehaviour
         UnsubscribeBlockSpecs();
         blockSpecs = ScriptableObject.CreateInstance<BlockSpecs>();
         BlockSpecs = blockSpecs;
+        displayBlock.CreateBlockFromSpecification(BlockSpecs);
         SubscribeBlockSpecs();
         BlockSpecs.OnValidate();
         onCreateNewBlock.Invoke();
@@ -30,7 +34,8 @@ public class BlockCreator : MonoBehaviour
 
     public void SaveBlock()
     {
-        UnityEditor.AssetDatabase.CreateAsset(BlockSpecs, $"Assets/Prefabs/Blocks/{blockSpecs.displayName}.asset");
+        BlockSpecs copy = Instantiate(BlockSpecs);
+        UnityEditor.AssetDatabase.CreateAsset(copy, $"Assets/Prefabs/Blocks/{blockSpecs.displayName}.asset");
         UnityEditor.AssetDatabase.SaveAssets();
         UnityEditor.AssetDatabase.Refresh();
     }
@@ -69,6 +74,7 @@ public class BlockCreator : MonoBehaviour
         if (BlockSpecs != null)
         {
             BlockSpecs.OnSpecsUpdate -= OnSpecsUpdate;
+            BlockSpecs.OnSpecsUpdate -= displayBlock.UpdateBlock;
         }
     }
 
@@ -77,6 +83,7 @@ public class BlockCreator : MonoBehaviour
         if (BlockSpecs != null)
         {
             BlockSpecs.OnSpecsUpdate += OnSpecsUpdate;
+            BlockSpecs.OnSpecsUpdate += displayBlock.UpdateBlock;
         }
     }
 

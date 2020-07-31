@@ -7,7 +7,7 @@ using System;
 public class BlockSpecsMenuCreator : MonoBehaviour
 {
     [SerializeField]
-    private BlockCreator blockCreator;
+    private BlockCreator blockCreator = default;
 
     [SerializeField]
     private TextUI inputFieldPrefab = default;
