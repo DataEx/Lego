@@ -11,7 +11,7 @@ public class BlockCreator : MonoBehaviour
     public BlockSpecs BlockSpecs { get; private set; }
 
     [SerializeField]
-    Blockk displayBlock = default;
+    Block displayBlock = default;
 
     [Space(15)]
     [SerializeField]
@@ -54,11 +54,6 @@ public class BlockCreator : MonoBehaviour
         // TODO Maybe don't let them touch the file directly but create menu options that can be modified and then saved to file?
     }
 
-    private void OnSpecsUpdate() {
-        // TODO: Create block
-        print("make me a block with " + BlockSpecs.length);
-    }
-
     private void CheckForSpecsFileChange()
     {
         if (BlockSpecs != blockSpecs)
@@ -73,7 +68,6 @@ public class BlockCreator : MonoBehaviour
     {
         if (BlockSpecs != null)
         {
-            BlockSpecs.OnSpecsUpdate -= OnSpecsUpdate;
             BlockSpecs.OnSpecsUpdate -= displayBlock.UpdateBlock;
         }
     }
@@ -82,15 +76,12 @@ public class BlockCreator : MonoBehaviour
     {
         if (BlockSpecs != null)
         {
-            BlockSpecs.OnSpecsUpdate += OnSpecsUpdate;
             BlockSpecs.OnSpecsUpdate += displayBlock.UpdateBlock;
         }
     }
 
     private void OnDestroy()
     {
-        if (BlockSpecs != null) {
-            BlockSpecs.OnSpecsUpdate -= OnSpecsUpdate;
-        }
+        UnsubscribeBlockSpecs();
     }
 }

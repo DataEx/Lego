@@ -6,37 +6,21 @@ using UnityEngine;
 public class Block : MonoBehaviour
 {
     [SerializeField]
-    private BlockSpecification blockSpecification;
-
+    private BlockSpecs blockSpecification;
     private MaterialPropertyBlock mpb;
+    private float materialAlpha = 1f;
 
-    private void OnValidate()
-    {
-        blockSpecification.OnValidate();
-        if(Application.isPlaying) { return; }
-        EditorApplication.delayCall += () =>
-        {
-            if (this == null) { return; }
-            CreateBlockFromSpecification();
-        };
-    }
-
-    private void Start()
-    {
-        CreateBlockFromSpecification();
-    }
-
-
-    public void CreateBlockFromSpecification(BlockSpecification specification) {
+    public void CreateBlockFromSpecification(BlockSpecs specification) {
         blockSpecification = specification;
-        CreateBlockFromSpecification();
+        UpdateBlock();
     }
 
-    private void CreateBlockFromSpecification() {
+    [ContextMenu("Create Block")]
+    public void UpdateBlock() {
         Transform stubParent = transform;
         Stub stubPrefab = FindObjectOfType<PrefabSpawner>().StubPrefab;
         Bounds stubBounds = stubPrefab.GetComponent<Renderer>().bounds;
-                if(mpb == null) {
+        if(mpb == null) {
             mpb = new MaterialPropertyBlock();
         }
 
@@ -53,24 +37,46 @@ public class Block : MonoBehaviour
                 stub.transform.parent = stubParent;
                 Vector3 stubPosition = new Vector3(stubBounds.size.x * j, 0f, stubBounds.size.z * i);
                 stub.transform.localPosition = stubPosition;
+                stub.transform.localRotation = Quaternion.identity;
                 stub.SetMaterialBlock(mpb);
             }
         }
-        mpb.SetColor("_BaseColor", blockSpecification.color);
+        SetColor();
     }
 
-
-    [MenuItem("GameObject/Block", false, 10)]
-    static void CreateCustomGameObject(MenuCommand menuCommand)
+    private void Start()
     {
-        // Create a custom game object
-        GameObject go = new GameObject("Block");
-        go.AddComponent<Block>();
-
-        // Ensure it gets reparented if this was a context click (otherwise does nothing)
-        GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
-        // Register the creation in the undo system
-        Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
-        Selection.activeObject = go;
+        UpdateBlock();
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A)) {
+            SetAlpha(0.5f);
+        }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            SetAlpha(1f);
+        }
+    }
+
+    public void SetAlpha(float alpha)
+    {
+        materialAlpha = alpha;
+        SetColor();
+    }
+
+    private void SetColor() {
+        Color color = blockSpecification.color;
+        color.a = materialAlpha;
+        mpb.SetColor("_BaseColor", color);
+
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Stub stub = transform.GetChild(i).GetComponent<Stub>();
+            stub.SetMaterialBlock(mpb);
+        }
+    }
+
+
 }
