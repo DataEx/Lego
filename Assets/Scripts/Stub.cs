@@ -9,10 +9,22 @@ public class Stub : MonoBehaviour
 
     private Renderer[] renderers;
     private MaterialPropertyBlock mpb;
+    public Block Block { get; set; }
+    private Vector3Int localBlockCoordinate;
 
     private void Awake()
     {
         InitializeVariables();
+    }
+
+    public void SetLocalBlockCoordinate(Vector3Int coordinate)
+    {
+        localBlockCoordinate = coordinate;
+        name = coordinate.ToString();
+    }
+
+    public Vector3Int GetLocalBlockCoordinate() {
+        return localBlockCoordinate;
     }
 
     public void SetMaterialBlock(MaterialPropertyBlock mpb)

@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Block : MonoBehaviour
 {
@@ -9,6 +6,9 @@ public class Block : MonoBehaviour
     private BlockSpecs blockSpecification;
     private MaterialPropertyBlock mpb;
     private float materialAlpha = 1f;
+    private Stub[] stubs = null;
+    private Vector3Int[] localBlockCoordinates = null;
+    public BlockOrientation BlockOrientation { get; private set; } = BlockOrientation.Normal;
 
     public void CreateBlockFromSpecification(BlockSpecs specification) {
         blockSpecification = specification;
@@ -29,34 +29,39 @@ public class Block : MonoBehaviour
             DestroyImmediate(stubParent.GetChild(i).gameObject);
         }
 
+        stubs = new Stub[blockSpecification.width * blockSpecification.length];
+        localBlockCoordinates = new Vector3Int[stubs.Length];
+        print("create stubs");
+        Vector3Int blockCoordinate = Vector3Int.zero;
+        int index = 0;
         for (int i = 0; i < blockSpecification.length; i++)
         {
+            blockCoordinate.z = i;
             for (int j = 0; j < blockSpecification.width; j++)
             {
-                Stub stub = Instantiate(stubPrefab.gameObject).GetComponent<Stub>();
+                blockCoordinate.x = j;
+
+                Stub stub = Instantiate(stubPrefab);
                 stub.transform.parent = stubParent;
                 Vector3 stubPosition = new Vector3(stubBounds.size.x * j, 0f, stubBounds.size.z * i);
                 stub.transform.localPosition = stubPosition;
                 stub.transform.localRotation = Quaternion.identity;
+                stub.Block = this;
                 stub.SetMaterialBlock(mpb);
+                stub.SetLocalBlockCoordinate(blockCoordinate);
+
+                stubs[index] = stub;
+                localBlockCoordinates[index] = blockCoordinate;
+                index++;
             }
         }
         SetColor();
     }
 
-    private void Start()
+    private void Awake()
     {
-        UpdateBlock();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A)) {
-            SetAlpha(0.5f);
-        }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            SetAlpha(1f);
+        if (blockSpecification != null) {
+            UpdateBlock();
         }
     }
 
@@ -71,12 +76,18 @@ public class Block : MonoBehaviour
         color.a = materialAlpha;
         mpb.SetColor("_BaseColor", color);
 
-        for (int i = 0; i < transform.childCount; i++)
+        for (int i = 0; i < stubs.Length; i++)
         {
-            Stub stub = transform.GetChild(i).GetComponent<Stub>();
-            stub.SetMaterialBlock(mpb);
+            stubs[i].SetMaterialBlock(mpb);
         }
     }
 
+    public Vector3Int[] GetLocalBlockCoordinates() {
+        return localBlockCoordinates;
+    }
 
+    public void Rotate(BlockOrientation orientation) {
+        BlockOrientation = orientation;
+        transform.eulerAngles = orientation.ToRotation();
+    }
 }
