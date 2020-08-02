@@ -21,7 +21,7 @@ public static class BlockOrientationHelper {
                 transformedCoordinate = new Vector3Int(-coordinate.x, coordinate.y, -coordinate.z);
                 break;
             case BlockOrientation.ThreeQuaterTurn:
-                transformedCoordinate = new Vector3Int(-coordinate.z, coordinate.y, -coordinate.x);
+                transformedCoordinate = new Vector3Int(-coordinate.z, coordinate.y, coordinate.x);
                 break;
         }
         return transformedCoordinate;

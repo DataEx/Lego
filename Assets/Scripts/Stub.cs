@@ -11,6 +11,7 @@ public class Stub : MonoBehaviour
     private MaterialPropertyBlock mpb;
     public Block Block { get; set; }
     private Vector3Int localBlockCoordinate;
+    public Vector3Int BlockCoordinate { get; set; }
 
     private void Awake()
     {

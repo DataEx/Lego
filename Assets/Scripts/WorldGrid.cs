@@ -29,6 +29,7 @@ public class WorldGrid : MonoBehaviour
     }
 
     public static Vector3Int WorldPositionToCoordinate(Vector3 worldPosition) {
+//        Something wrong...
         worldPosition -= OriginOffset;
         Vector3Int coordinate = new Vector3Int((int)worldPosition.x, (int)worldPosition.y, (int)worldPosition.z);
         return coordinate;
@@ -54,17 +55,18 @@ public class WorldGrid : MonoBehaviour
 
     public static BlockPlacementPermission CanPlace(Block block, Vector3Int baseCoordinate)
     {
-        Vector3Int[] localBlockCoordinates = block.GetLocalBlockCoordinates();
-        for (int i = 0; i < localBlockCoordinates.Length; i++)
+        Stub[] stubs = block.GetStubs();
+        for (int i = 0; i < stubs.Length; i++)
         {
-
+            Vector3Int localCoordinate = stubs[i].GetLocalBlockCoordinate();
             Vector3Int worldCoordinate = baseCoordinate + 
-                BlockOrientationHelper.TransformCoordinate(localBlockCoordinates[i], block.BlockOrientation);
+                BlockOrientationHelper.TransformCoordinate(localCoordinate, block.BlockOrientation);
             if (!IsValidCoordinate(worldCoordinate)) {
+                //Debug.LogError($"Out of range: At {baseCoordinate}, cannot place local: ({localCoordinate} | {stubs[i].name}) {i} at {worldCoordinate}");
                 return BlockPlacementPermission.OutOfRange;
             }
             if (IsOccupied(worldCoordinate)) {
-                Debug.LogError($"At {baseCoordinate}, cannot place local:{localBlockCoordinates[i]} {i} at {worldCoordinate}");
+                //Debug.LogError($"Occupied: At {baseCoordinate}, cannot place local:{localCoordinate} {i} at {worldCoordinate}");
                 return BlockPlacementPermission.Occupied;
             }
         }
@@ -75,12 +77,15 @@ public class WorldGrid : MonoBehaviour
     {
         if(CanPlace(block, baseCoordinate) != BlockPlacementPermission.Valid) { return; }
 
-        Vector3Int[] localBlockCoordinates = block.GetLocalBlockCoordinates();
-        for (int i = 0; i < localBlockCoordinates.Length; i++)
+        Stub[] stubs = block.GetStubs();
+        for (int i = 0; i < stubs.Length; i++)
         {
+            Vector3Int localCoordinate = stubs[i].GetLocalBlockCoordinate();
             Vector3Int worldCoordinate = baseCoordinate + 
-                BlockOrientationHelper.TransformCoordinate(localBlockCoordinates[i], block.BlockOrientation);
+                BlockOrientationHelper.TransformCoordinate(localCoordinate, block.BlockOrientation);
             SetCoordinate(worldCoordinate, true);
+            stubs[i].name = worldCoordinate.ToString();
+            stubs[i].BlockCoordinate = worldCoordinate;
         }
         block.transform.position = CoordinateToWorldPosition(baseCoordinate);
     }

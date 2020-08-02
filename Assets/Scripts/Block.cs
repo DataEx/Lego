@@ -8,7 +8,6 @@ public class Block : MonoBehaviour
     private float materialAlpha = 1f;
     private Stub[] stubs = null;
     private Vector3Int[] localBlockCoordinates = null;
-    public Vector3Int Extents { get; private set; }   
     public BlockOrientation BlockOrientation { get; private set; } = BlockOrientation.Normal;
 
     public void CreateBlockFromSpecification(BlockSpecs specification) {
@@ -50,7 +49,6 @@ public class Block : MonoBehaviour
                 stub.Block = this;
                 stub.SetMaterialBlock(mpb);
                 stub.SetLocalBlockCoordinate(blockCoordinate);
-                Extents = Vector3Int.Max(Extents, blockCoordinate);
 
                 stubs[index] = stub;
                 localBlockCoordinates[index] = blockCoordinate;
@@ -84,8 +82,13 @@ public class Block : MonoBehaviour
         }
     }
 
+    /*
     public Vector3Int[] GetLocalBlockCoordinates() {
         return localBlockCoordinates;
+    }
+    */
+    public Stub[] GetStubs() {
+        return stubs;
     }
 
     public void Rotate(BlockOrientation orientation) {
