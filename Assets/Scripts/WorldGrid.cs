@@ -52,7 +52,7 @@ public class WorldGrid : MonoBehaviour
         return index;
     } 
 
-    public static bool CanPlace(Block block, Vector3Int baseCoordinate)
+    public static BlockPlacementPermission CanPlace(Block block, Vector3Int baseCoordinate)
     {
         Vector3Int[] localBlockCoordinates = block.GetLocalBlockCoordinates();
         for (int i = 0; i < localBlockCoordinates.Length; i++)
@@ -61,19 +61,19 @@ public class WorldGrid : MonoBehaviour
             Vector3Int worldCoordinate = baseCoordinate + 
                 BlockOrientationHelper.TransformCoordinate(localBlockCoordinates[i], block.BlockOrientation);
             if (!IsValidCoordinate(worldCoordinate)) {
-                return false;
+                return BlockPlacementPermission.OutOfRange;
             }
             if (IsOccupied(worldCoordinate)) {
                 Debug.LogError($"At {baseCoordinate}, cannot place local:{localBlockCoordinates[i]} {i} at {worldCoordinate}");
-                return false;
+                return BlockPlacementPermission.Occupied;
             }
         }
-        return true;
+        return BlockPlacementPermission.Valid;
     }
 
     public static void Place(Block block, Vector3Int baseCoordinate)//, Orientation)
     {
-        if(!CanPlace(block, baseCoordinate)) { return; }
+        if(CanPlace(block, baseCoordinate) != BlockPlacementPermission.Valid) { return; }
 
         Vector3Int[] localBlockCoordinates = block.GetLocalBlockCoordinates();
         for (int i = 0; i < localBlockCoordinates.Length; i++)
