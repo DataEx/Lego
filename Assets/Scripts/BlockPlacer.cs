@@ -5,7 +5,9 @@ using UnityEngine;
 public class BlockPlacer : MonoBehaviour
 {
     [SerializeField]
-    private BlockSpecs blockToPlace = default;
+    private BlockSpecs[] blockPrefabs = default;
+    private int prefabIndex = 0;
+
     private Block previewBlock;
     private Camera activeCamera;
     private LayerMask layerMask;
@@ -25,32 +27,59 @@ public class BlockPlacer : MonoBehaviour
 
     private void Start()
     {
-        previewBlock = CreatePreviewBlock();
+        CreatePreviewBlock();
+    }
 
+    private void CreatePreviewBlock()
+    {
+        if(previewBlock != null) { Destroy(previewBlock.gameObject); }
+
+        previewBlock = CreateBlock();
+        previewBlock.SetAlpha(0.5f);
         foreach (Transform t in previewBlock.transform)
         {
             t.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
         }
     }
 
-    private Block CreatePreviewBlock()
+    private Block CreateBlock()
     {
         GameObject go = new GameObject("Preview");
         Block block = go.AddComponent<Block>();
-        block.CreateBlockFromSpecification(blockToPlace);
+        block.CreateBlockFromSpecification(blockPrefabs[prefabIndex]);
         return block;
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.RightArrow)) {
+            prefabIndex = (prefabIndex + 1) % blockPrefabs.Length;
+            CreatePreviewBlock();
+        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            prefabIndex = (prefabIndex - 1);
+            if(prefabIndex < 0) { prefabIndex = blockPrefabs.Length - 1; }
+            CreatePreviewBlock();
+        }
+
+
         if (Input.GetKeyDown(KeyCode.R)) {
             RotateClockwise();
         }
 
         BlockPlacementPermission canPlace = PreviewPlacement(out Vector3Int coordinateToPlace);
-        if (canPlace == BlockPlacementPermission.Valid && Input.GetMouseButtonDown(0))
+        if (canPlace == BlockPlacementPermission.Valid)
         {
-            PlaceBlockAt(coordinateToPlace);
+            previewBlock.gameObject.SetActive(true);
+            if (Input.GetMouseButtonDown(0))
+            {
+                PlaceBlockAt(coordinateToPlace);
+            }
+        }
+        else {
+            previewBlock.gameObject.SetActive(false);
+
         }
     }
 
@@ -60,7 +89,7 @@ public class BlockPlacer : MonoBehaviour
 
     private void RotateCounterClockwise()
     {
-
+        previewBlock.Rotate(previewBlock.BlockOrientation.Previous());
     }
 
 
@@ -94,7 +123,7 @@ public class BlockPlacer : MonoBehaviour
     }
 
     private void PlaceBlockAt(Vector3Int coordinate) {
-        Block block = CreatePreviewBlock();
+        Block block = CreateBlock();
         block.Rotate(previewBlock.BlockOrientation);
         block.name = "Block";
         WorldGrid.Place(block, coordinate);

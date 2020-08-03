@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Grid
   m_EditorClassIdentifier: 
   displayName: Grid
-  width: 16
+  width: 14
   length: 9
   color: {r: 0, g: 0.6, b: 0.2, a: 1}
