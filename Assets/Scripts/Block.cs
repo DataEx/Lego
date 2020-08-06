@@ -4,6 +4,10 @@ public class Block : MonoBehaviour
 {
     [SerializeField]
     private BlockSpecs blockSpecification;
+
+    [SerializeField, Layer]
+    int layer;
+
     private MaterialPropertyBlock mpb;
     private float materialAlpha = 1f;
     private Stub[] stubs = null;
@@ -46,9 +50,11 @@ public class Block : MonoBehaviour
                 Vector3 stubPosition = new Vector3(stubBounds.size.x * j, 0f, stubBounds.size.z * i);
                 stub.transform.localPosition = stubPosition;
                 stub.transform.localRotation = Quaternion.identity;
+                stub.transform.localScale = Vector3.one;
                 stub.Block = this;
                 stub.SetMaterialBlock(mpb);
                 stub.SetLocalBlockCoordinate(blockCoordinate);
+                stub.SetLayer(layer);
 
                 stubs[index] = stub;
                 localBlockCoordinates[index] = blockCoordinate;

@@ -43,4 +43,9 @@ public class Stub : MonoBehaviour
             renderers = GetComponentsInChildren<Renderer>();
         }
     }
+
+    public void SetLayer(int layer) {
+        gameObject.layer = layer;
+        nub.gameObject.layer = layer;
+    }
 }
