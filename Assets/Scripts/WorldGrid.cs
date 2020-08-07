@@ -8,9 +8,6 @@ public class WorldGrid : MonoBehaviour
     private Vector3Int dimensions;
     private static Vector3Int gridDimensions;
 
-    [SerializeField]
-    private PrefabSpawner prefabSpawner = default;
-
     private static bool[] grid;
     private static Vector3 origin;
     private static float stubSize = 1f;
@@ -108,7 +105,7 @@ public class WorldGrid : MonoBehaviour
                 {
                     coordinate.z = z;
                     Vector3 spawnPosition = CoordinateToWorldPosition(coordinate);
-                    GameObject obj = Instantiate(prefabSpawner.StubPrefab.gameObject, spawnPosition, Quaternion.identity);
+                    GameObject obj = Instantiate(PrefabSpawner.StubPrefab.gameObject, spawnPosition, Quaternion.identity);
                     yield return null;
                 }
             }

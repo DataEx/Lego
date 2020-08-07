@@ -6,10 +6,9 @@ using UnityEngine.UI;
 public class ScrollRectStretcher : MonoBehaviour
 {
     [SerializeField]
-    private ScrollRect scrollRect;
+    private ScrollRect scrollRect = default;
 
     private VerticalLayoutGroup vlg = default;
-    private float spacing = 0f;
     private RectTransform rectTransform = default;
 
     // Start is called before the first frame update
@@ -34,8 +33,13 @@ public class ScrollRectStretcher : MonoBehaviour
         UpdateHeight();
     }
 
+    private void OnRectTransformDimensionsChange()
+    {
+        UpdateHeight();
+    }
+
     [ContextMenu("Update Height")]
-    void UpdateHeight()
+    public void UpdateHeight()
     {
         GetComponents();
 

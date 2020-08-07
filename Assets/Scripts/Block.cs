@@ -6,7 +6,7 @@ public class Block : MonoBehaviour
     private BlockSpecs blockSpecification;
 
     [SerializeField, Layer]
-    int layer;
+    int layer = 0;
 
     private MaterialPropertyBlock mpb;
     private float materialAlpha = 1f;
@@ -22,7 +22,7 @@ public class Block : MonoBehaviour
     [ContextMenu("Create Block")]
     public void UpdateBlock() {
         Transform stubParent = transform;
-        Stub stubPrefab = FindObjectOfType<PrefabSpawner>().StubPrefab;
+        Stub stubPrefab = PrefabSpawner.StubPrefab;
         Bounds stubBounds = stubPrefab.GetComponent<Renderer>().bounds;
         if(mpb == null) {
             mpb = new MaterialPropertyBlock();
@@ -64,10 +64,18 @@ public class Block : MonoBehaviour
         SetColor();
     }
 
-    private void Awake()
+    private void Start()
     {
         if (blockSpecification != null) {
             UpdateBlock();
+        }
+    }
+
+    public void SetLayer(int layer) {
+        this.layer = layer;
+        foreach (var stub in stubs)
+        {
+            stub.SetLayer(layer);
         }
     }
 

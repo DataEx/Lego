@@ -36,10 +36,7 @@ public class BlockPlacer : MonoBehaviour
 
         previewBlock = CreateBlock();
         previewBlock.SetAlpha(0.5f);
-        foreach (Transform t in previewBlock.transform)
-        {
-            t.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-        }
+        previewBlock.SetLayer(LayerMask.NameToLayer("Ignore Raycast"));
     }
 
     private Block CreateBlock()
@@ -95,8 +92,10 @@ public class BlockPlacer : MonoBehaviour
 
     private BlockPlacementPermission PreviewPlacement(out Vector3Int coordinateToPlace) {
         coordinateToPlace = Vector3Int.zero;
-        Ray ray = activeCamera.ScreenPointToRay(Input.mousePosition);
 
+        if (UIHelper.IsMouseOverUI()) { return BlockPlacementPermission.OutOfRange; }
+
+        Ray ray = activeCamera.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out RaycastHit hit, 100f, layerMask))
         {

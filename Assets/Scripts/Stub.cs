@@ -5,7 +5,7 @@ using UnityEngine;
 public class Stub : MonoBehaviour
 {
     [SerializeField]
-    private Nub nub;
+    private Nub nub = default;
 
     private Renderer[] renderers;
     private MaterialPropertyBlock mpb;
